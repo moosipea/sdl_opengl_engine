@@ -1,3 +1,4 @@
+# trash build system
 echo Building project
 
 # copy assets folder to build folder

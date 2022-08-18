@@ -7,6 +7,6 @@ in vec3 in_Color;
 out vec3 ex_Color;
 
 void main(void) {
-	gl_Position = in_Position;
+	gl_Position = in_Position; 
 	ex_Color = in_Color;
 }

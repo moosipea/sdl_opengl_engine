@@ -1,4 +1,6 @@
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_video.h>
 #include <iostream>
 #include <algorithm>
@@ -107,12 +109,10 @@ namespace vari {
 			glGetShaderiv(vert_shader, GL_INFO_LOG_LENGTH, &log_length);
 			std::vector<GLchar> vert_shader_error((log_length > 1) ? log_length : 1);
 			glGetShaderInfoLog(vert_shader, log_length, NULL, &vert_shader_error[0]);
-			for(int i = 0; i < log_length; i++) {
-				std::string character(vert_shader_error[i], sizeof(GLchar));
-				compile_log.append(character);
+			for(int i = 0; i < vert_shader_error.size(); i++) {
+				std::cout << vert_shader_error[i];
 			}
-			compile_log.append("\n");
-			
+
 			compile_log.append("Compiling fragment shader\n");
 			glShaderSource(frag_shader, 1, &frag_src_c, NULL);
 			glCompileShader(frag_shader);
@@ -121,11 +121,9 @@ namespace vari {
 			glGetShaderiv(frag_shader, GL_INFO_LOG_LENGTH, &log_length);
 			std::vector<GLchar> frag_shader_error((log_length > 1) ? log_length : 1);
 			glGetShaderInfoLog(frag_shader, log_length, NULL, &frag_shader_error[0]);
-			for(int j = 0; j < log_length; j++) {
-				std::string character(vert_shader_error[j], sizeof(GLchar));
-				compile_log.append(character);
+			for(int j = 0; j < frag_shader_error.size(); j++) {
+				std::cout << frag_shader_error[j];
 			}
-			compile_log.append("\n");
 
 			compile_log.append("Linking program\n");
 			this->program = glCreateProgram();
@@ -136,12 +134,10 @@ namespace vari {
 			glGetProgramiv(this->program, GL_LINK_STATUS, &result);
 			glGetProgramiv(this->program, GL_INFO_LOG_LENGTH, &log_length);
 			std::vector<GLchar> program_error((log_length > 1) ? log_length : 1);
-			glGetProgramInfoLog(this->program, log_length, NULL, &program_error[0]);
-			for(int k = 0; k < log_length; k++) {
-				std::string character(vert_shader_error[k], sizeof(GLchar));
-				compile_log.append(character);
+			glGetProgramInfoLog(this->program, log_length, NULL, &program_error[0]);	
+			for(int k = 0; k < program_error.size(); k++) {
+				std::cout << program_error[k];
 			}
-			compile_log.append("\n");
 
 			glDeleteShader(vert_shader);
 			glDeleteShader(frag_shader);
@@ -163,10 +159,14 @@ namespace vari {
 
 	};
 
-	// --== Enums ==-- //
+	struct Key {
+		int scancode;
+		Key(int sdl_scancode) : scancode(sdl_scancode) {}
+	};
+
+	// --== Constants ==-- //
 	
 	// Same palette as olc::PixelGameEngine
-	// Does this count as an enum?
 	static const Color
 		GREY(0.75f, 0.75f, 0.75f), DARK_GREY(0.5f, 0.5f, 0.5f),    VERY_DARK_GREY(0.25f, 0.25f, 0.25f),
 		RED(1.0f, 0.0f, 0.0f),     DARK_RED(0.5f, 0.0f, 0.0f),     VERY_DARK_RED(0.25f, 0.0f, 0.0f),
@@ -176,7 +176,25 @@ namespace vari {
 		BLUE(0.0f, 0.0f, 1.0f),    DARK_BLUE(0.0f, 0.0f, 0.5f),    VERY_DARK_BLUE(0.0f, 0.0f, 0.25f),
 		MAGENTA(1.0f, 0.0f, 1.0f), DARK_MAGENTA(0.5f, 0.0f, 0.5f), VERY_DARK_MAGENTA(0.25f, 0.0f, 0.25f),
 		WHITE(1.0f, 1.0f, 1.0f),   BLACK(0.0f, 0.0f, 0.0f);
-		
+	
+	static const Key
+		ZERO(SDL_SCANCODE_0),              ONE(SDL_SCANCODE_1),          TWO(SDL_SCANCODE_2),   THREE(SDL_SCANCODE_3), FOUR(SDL_SCANCODE_4),
+		FIVE(SDL_SCANCODE_5),              SIX(SDL_SCANCODE_6),          SEVEN(SDL_SCANCODE_7), EIGHT(SDL_SCANCODE_8), NINE(SDL_SCANCODE_9),
+		A(SDL_SCANCODE_A),                 B(SDL_SCANCODE_B),            C(SDL_SCANCODE_C),     D(SDL_SCANCODE_D),     E(SDL_SCANCODE_E),
+		F(SDL_SCANCODE_F),                 G(SDL_SCANCODE_G),            H(SDL_SCANCODE_H),     I(SDL_SCANCODE_I),     J(SDL_SCANCODE_J),
+		K(SDL_SCANCODE_K),                 L(SDL_SCANCODE_L),            M(SDL_SCANCODE_M),     N(SDL_SCANCODE_N),     O(SDL_SCANCODE_O),
+		P(SDL_SCANCODE_P),                 Q(SDL_SCANCODE_Q),            R(SDL_SCANCODE_R),     S(SDL_SCANCODE_S),     T(SDL_SCANCODE_T),
+		U(SDL_SCANCODE_U),                 V(SDL_SCANCODE_V),            W(SDL_SCANCODE_W),     X(SDL_SCANCODE_X),     Y(SDL_SCANCODE_Y),
+		Z(SDL_SCANCODE_Z),
+		F1(SDL_SCANCODE_F1),               F2(SDL_SCANCODE_F2),          F3(SDL_SCANCODE_F3),   F4(SDL_SCANCODE_F4),   F5(SDL_SCANCODE_F5),
+		F6(SDL_SCANCODE_F6),               F7(SDL_SCANCODE_F7),          F8(SDL_SCANCODE_F8),   F9(SDL_SCANCODE_F9),   F10(SDL_SCANCODE_F10),
+		F11(SDL_SCANCODE_F11),             F12(SDL_SCANCODE_F12),
+		BACKSPACE(SDL_SCANCODE_BACKSPACE), DELETE(SDL_SCANCODE_DELETE),  ESCAPE(SDL_SCANCODE_ESCAPE),
+		LALT(SDL_SCANCODE_LALT),           LCONTROL(SDL_SCANCODE_LCTRL), LSHIFT(SDL_SCANCODE_LSHIFT),
+		RALT(SDL_SCANCODE_RALT),           RCONTROL(SDL_SCANCODE_RCTRL), RSHIFT(SDL_SCANCODE_RSHIFT),
+		ENTER(SDL_SCANCODE_RETURN),        SPACE(SDL_SCANCODE_SPACE),    TAB(SDL_SCANCODE_TAB),
+		PGUP(SDL_SCANCODE_PAGEUP),         PGDN(SDL_SCANCODE_PAGEDOWN),
+		LEFT(SDL_SCANCODE_LEFT),           RIGHT(SDL_SCANCODE_RIGHT),    UP(SDL_SCANCODE_UP),   DOWN(SDL_SCANCODE_DOWN);
 
 	// --== Classes ==-- //
 	
@@ -290,10 +308,10 @@ namespace vari {
 			//
 			void test_rect() {
 				glBegin(GL_QUADS);
-					glVertex2f(-0.8f, -0.8f);
-					glVertex2f(0.8f, -0.8f);
-					glVertex2f(0.8f, 0.8f);
-					glVertex2f(-0.8f, 0.8f);
+					glVertex2f(-1.0f, -1.0f);
+					glVertex2f(1.0f, -1.0f);
+					glVertex2f(1.0f, 1.0f);
+					glVertex2f(-1.0f, 1.0f);
 				glEnd();
 			}
 
@@ -354,6 +372,15 @@ namespace vari {
 
 		file_stream.close();
 		return content;
+	}
+	
+	bool keyHeld(Key key) {
+		const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
+		if(keyboard_state[key.scancode]) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 };

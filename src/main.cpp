@@ -16,7 +16,25 @@ class myApp : public vari::App {
 		}
 
 		void update(float delta) override {
+
+			if(vari::keyHeld(vari::LEFT))
+				x_shift -= 0.2f * delta;
+			if(vari::keyHeld(vari::RIGHT))
+				x_shift += 0.2f * delta;
+
+			if(vari::keyHeld(vari::UP))
+				y_shift += 0.2f * delta;
+			if(vari::keyHeld(vari::DOWN))
+				y_shift -= 0.2f * delta;
+			
+			if(vari::keyHeld(vari::LSHIFT))
+				zoom += 0.1f * delta;
+			if(vari::keyHeld(vari::LCONTROL))
+				zoom -= 0.1f * delta;
+
 			myShader.setUniform2f("iResolution", 640.0f, 480.0f);
+			myShader.setUniform2f("iShift", x_shift, y_shift);
+			myShader.setUniform1f("iZoom", zoom);
 		}
 
 		void draw() override {
@@ -26,6 +44,9 @@ class myApp : public vari::App {
 
 	private:
 		vari::Shader myShader;
+		float x_shift = 0.0f;
+		float y_shift = 0.0f;
+		float zoom = 1.0f;
 };
 
 int main(int argc, char **argv) {
